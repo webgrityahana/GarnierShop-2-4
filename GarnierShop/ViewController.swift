@@ -179,74 +179,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource, UIImagePic
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let detail = self.storyboard?.instantiateViewController(withIdentifier: "DetailViewController") as? DetailViewController
-        
-        if let urlString = arrdata[indexPath.row].images.first?.src, let url = URL(string: urlString) {
-            URLSession.shared.dataTask(with: url) { (data, urlResponse, error) in
-                if let data = data {
-                    detail?.Image = UIImage(data: data)!
-                }
-            }.resume()
-        }
-        
-        /*let imagesArray = arrdata[indexPath.row].images
-
-        if imagesArray.count > 0, let url = URL(string: imagesArray[0].src) {
-            URLSession.shared.dataTask(with: url) { (data, urlResponse, error) in
-                if let data = data {
-                    detail?.Image = UIImage(data: data)!
-                }
-            }.resume()
-        }
-            
-        else if imagesArray.count > 0, let url = URL(string: imagesArray[1].src) {
-            URLSession.shared.dataTask(with: url) { (data, urlResponse, error) in
-                if let data = data {
-                    detail?.Image = UIImage(data: data)!
-                }
-            }.resume()
-        }
-            
-        else if imagesArray.count > 0, let url = URL(string: imagesArray[2].src) {
-            URLSession.shared.dataTask(with: url) { (data, urlResponse, error) in
-                if let data = data {
-                    detail?.Image = UIImage(data: data)!
-                }
-            }.resume()
-        }*/
-
-        detail?.Name = arrdata[indexPath.row].name
-        detail?.Name2 = arrdata[indexPath.row].name
-        detail?.SH_desc = arrdata[indexPath.row].categories.first!.type
-        detail?.Desc = arrdata[indexPath.row].description
-        detail?.Price = arrdata[indexPath.row].price
-
-        let imagesArray = arrdata[indexPath.row].images
-
-        if imagesArray.count > 0, let url = URL(string: imagesArray[0].src) {
-            URLSession.shared.dataTask(with: url) { (data, urlResponse, error) in
-                if let data = data {
-                    detail?.Img1 = UIImage(data: data)!
-                }
-            }.resume()
-        }
-            
-        if imagesArray.count > 1, let url = URL(string: imagesArray[1].src) {
-            URLSession.shared.dataTask(with: url) { (data, urlResponse, error) in
-                if let data = data {
-                    detail?.Img2 = UIImage(data: data)!
-                }
-            }.resume()
-        }
-            
-        if imagesArray.count > 2, let url = URL(string: imagesArray[2].src) {
-            URLSession.shared.dataTask(with: url) { (data, urlResponse, error) in
-                if let data = data {
-                    detail?.Img3 = UIImage(data: data)!
-                }
-            }.resume()
-        }
-        
-        //detail?.detailInfo = arrdata[indexPath.row]
+        detail?.detailInfo = arrdata[indexPath.row]
         self.navigationController?.pushViewController(detail!, animated: true)
     }
 }

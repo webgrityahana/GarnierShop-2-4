@@ -112,7 +112,7 @@ class CartViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return arrdata.count
+        return cartArray.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -121,28 +121,53 @@ class CartViewController: UIViewController, UITableViewDataSource, UITableViewDe
         //cell?.productNameCart.text = arrdata[indexPath.row].name
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "CartCellTableViewCell", for: indexPath) as! CartCellTableViewCell
+        let cartData = cartArray[indexPath.row].cartItems
         
-        //cell.cartImageView.downloadImage(from: (self.cartArray[indexPath.item].images.first?.src)!)
+        cell.cartImageView.downloadImage(from: cartArray[indexPath.row].cartItems.images.first?.src ?? "place_holder_image")
         
         //cell.cartImageView.downloadImage(from: cartArray[indexPath.row].cartItems.images.first?.src ?? "place_holder_image")
         //cell.productNameCart.text = arrdata[indexPath.row].name
-        cell.productNameCart.text = cartArray[indexPath.row].cartItems.first?.name
+        cell.productNameCart.text = cartArray[indexPath.row].cartItems.name
         //cell.prodductDescCart.text = cartArray[indexPath.row].cartItems.first?.shortDescription
         //cell.productPriceCart.text = cartArray[indexPath.row].cartItems.price
         
-        //cell.addBtn.addTarget(self, action: #selector(add(sender:)), for: .touchUpInside)
+        cell.addBtn.addTarget(self, action: #selector(add(sender:)), for: .touchUpInside)
         cell.addBtn.tag = indexPath.row
         //let cartQuantity = cartArray[indexPath.row].cartQuantity
         //cell.prodCount.text = "\(cartQuantity)"
         //if cartQuantity > 1 {
-            cell.subBtn.isUserInteractionEnabled = true;
+           // cell.subBtn.isUserInteractionEnabled = true;
             //cell.subBtn.addTarget(self, action: #selector(sub(sender:)), for: .touchUpInside)
-            cell.subBtn.tag = indexPath.row
+           // cell.subBtn.tag = indexPath.row
         //} else {
-            cell.subBtn.isUserInteractionEnabled = false;
+            //cell.subBtn.isUserInteractionEnabled = false;
         //}
         
+        let cartQuantity = cartArray[indexPath.row].cartQuantity
+        cell.prodCount.text = "\(cartQuantity)"
+        if cartQuantity > 0 {
+            cell.subBtn.isUserInteractionEnabled = true;
+            cell.subBtn.addTarget(self, action: #selector(sub(sender:)), for: .touchUpInside)
+            cell.subBtn.tag = indexPath.row
+        } else {
+            cell.subBtn.isUserInteractionEnabled = false;
+        }
+        
         return cell
+    }
+    
+    @objc func add(sender: UIButton){
+        if cartArray[sender.tag].cartQuantity > 0 {
+            cartArray[sender.tag].cartQuantity += 1
+            cartTableView.reloadData()
+        }
+    }
+    
+    @objc func sub(sender: UIButton){
+        if cartArray[sender.tag].cartQuantity > 1 {
+            cartArray[sender.tag].cartQuantity -= 1
+            cartTableView.reloadData()
+        }
     }
     
 }

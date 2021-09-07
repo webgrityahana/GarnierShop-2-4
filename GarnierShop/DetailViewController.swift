@@ -7,14 +7,9 @@
 
 import UIKit
 
-struct CartStruct: Codable {
-    let cartItems: [jsonstruct]
-    let cartQuantity: Int
-
-    enum CodingKeys: String, CodingKey {
-        case cartItems
-        case cartQuantity
-    }
+struct CartStruct {
+    var cartItems: jsonstruct
+    var cartQuantity: Int
 }
 
 class DetailViewController: UIViewController {
@@ -22,8 +17,8 @@ class DetailViewController: UIViewController {
     var arrdata = [jsonstruct]()
     var categorydata = [Categories]()
     var imgdata = [Images]()
-
-    var detailInfo = [jsonstruct]()
+    
+    var detailInfo: jsonstruct?
     var cartArray = [CartStruct]()
     
     @IBOutlet weak var prodName: UILabel!
@@ -55,29 +50,17 @@ class DetailViewController: UIViewController {
     var Img2 = UIImage()
     var Img3 = UIImage()
     
-
+    
     var callback : ((Int)->())?
     var counter1 = 0 {
-          didSet {
+        didSet {
             cartCount.text = "\(counter1)"
-          }
+        }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        probImage.image = Img1
         
-        probImage.image = Image
-        prodName.text = Name
-        probName2.text = Name2
-        prodSHDesc.text = SH_desc
-        prodDesc.text = Desc
-        prodPrice.text = Price
-        imgone.image = Img1
-        imgtwo.image = Img2
-        imgthree.image = Img3
-
         probImage.layer.cornerRadius = 15
         probImage.clipsToBounds = true
         
@@ -110,18 +93,55 @@ class DetailViewController: UIViewController {
         cart4View.layer.cornerRadius = cart4View.frame.width / 2
         cart4View.layer.cornerRadius = cart4View.frame.height / 2
         cart4View.layer.masksToBounds = true
+        self.updateUI()
+    }
+    
+    func updateUI(){
+        if let detailInfo = detailInfo {
+            if let urlString = detailInfo.images.first?.src {
+                self.probImage.downloadImage(from: urlString)
+            }
+            
+            prodName.text = detailInfo.name
+            probName2.text = detailInfo.name
+            prodSHDesc.text = detailInfo.categories.first!.type
+            prodDesc.text = detailInfo.description
+            prodPrice.text = detailInfo.price
+            
+            let imagesArray = detailInfo.images
+            
+            
+            if imagesArray.count > 0{
+                self.probImage.downloadImage(from: detailInfo.images[0].src)
+                self.imgone.downloadImage(from: detailInfo.images[0].src)
+            }
+            
+            if imagesArray.count > 1 {
+                self.imgtwo.downloadImage(from: detailInfo.images[1].src)
+            }
+            
+            if imagesArray.count > 2 {
+                self.imgthree.downloadImage(from: detailInfo.images[2].src)
+            }
+        }
     }
     
     @IBAction func firstImgBtnTapped(_ sender: Any) {
-        probImage.image = Img1
+        if let imageURL = detailInfo?.images[0].src {
+            probImage.downloadImage(from: imageURL)
+        }
     }
     
     @IBAction func secondImgBtnTapped(_ sender: Any) {
-        probImage.image = Img2
+        if let imageURL = detailInfo?.images[1].src {
+            probImage.downloadImage(from: imageURL)
+        }
     }
     
     @IBAction func thirdImgBtnTapped(_ sender: Any) {
-        probImage.image = Img3
+        if let imageURL = detailInfo?.images[2].src {
+            probImage.downloadImage(from: imageURL)
+        }
     }
     
     @IBAction func cartTappedToNavigate(_ sender: Any) {
@@ -134,7 +154,7 @@ class DetailViewController: UIViewController {
     }
     
     @IBAction func addToCartbtnTapped(_ sender: Any) {
-        if let info = arrdata {
+        if let info = detailInfo {
             cartArray.append(CartStruct(cartItems: info, cartQuantity: 1))
             cartCount.text = "\(cartArray.count)"
             showAlert()
@@ -142,10 +162,10 @@ class DetailViewController: UIViewController {
             addToCartbtn.isUserInteractionEnabled = false
         }
         /*showAlert()
-        counter1 += 1
-        callback?(counter1)
-        (sender as AnyObject).setTitle("Go to Cart", for: .normal)
-        addToCartbtn.isUserInteractionEnabled = false*/
+         counter1 += 1
+         callback?(counter1)
+         (sender as AnyObject).setTitle("Go to Cart", for: .normal)
+         addToCartbtn.isUserInteractionEnabled = false*/
         //let cart = self.storyboard?.instantiateViewController(withIdentifier: "CartViewController") as? CartViewController
         //self.navigationController?.pushViewController(cart!, animated: true)
         
@@ -153,7 +173,7 @@ class DetailViewController: UIViewController {
     
     func showAlert() {
         let alert = UIAlertController(title: "Item Added to Cart", message: nil, preferredStyle: .alert)
-   
+        
         alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
         present(alert, animated: true, completion: nil)
     }

@@ -38,15 +38,15 @@ class CartCellTableViewCell: UITableViewCell {
         addBtn.layer.masksToBounds = true
     }
     
-    @IBAction func subBtnTapped(_ sender: Any) {
-        if counter1 > 0 { counter1 -= 1 }
-        callback?(counter1)
-    }
-    
-    @IBAction func addBtnTapped(_ sender: Any) {
-        counter1 += 1
-        callback?(counter1)
-    }
+//    @IBAction func subBtnTapped(_ sender: Any) {
+//        if counter1 > 0 { counter1 -= 1 }
+//        callback?(counter1)
+//    }
+//    
+//    @IBAction func addBtnTapped(_ sender: Any) {
+//        counter1 += 1
+//        callback?(counter1)
+//    }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
