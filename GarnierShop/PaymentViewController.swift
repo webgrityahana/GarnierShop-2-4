@@ -23,7 +23,9 @@ class PaymentViewController: UIViewController {
     @IBOutlet var txtName: UITextField!
     @IBOutlet var taxtCardNo: UITextField!
     @IBOutlet var txtcvv: UITextField!
+    @IBOutlet var amountToBePaid: UILabel!
     
+    var receivedString = ""
     
     let dropDown1 = DropDown()
     let monthArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]
@@ -33,7 +35,10 @@ class PaymentViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        amountToBePaid.text = receivedString
+        payBtn.setTitle("Pay \(receivedString)", for: .normal)
+        
         lblMonth.text = "Month"
         dropDown1.anchorView = viewMonth
         dropDown1.dataSource = monthArray

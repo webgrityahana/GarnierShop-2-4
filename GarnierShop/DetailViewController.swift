@@ -7,13 +7,13 @@
 
 import UIKit
 
-struct CartStruct {
+struct CartStruct : Codable {
     var cartItems: jsonstruct
     var cartQuantity: Int
 }
 
 class DetailViewController: UIViewController {
-    
+
     var arrdata = [jsonstruct]()
     var categorydata = [Categories]()
     var imgdata = [Images]()
@@ -38,7 +38,7 @@ class DetailViewController: UIViewController {
     @IBOutlet var imgthree: UIImageView!
     @IBOutlet var cart4View: UIView!
     @IBOutlet var cartCount: UILabel!
-    
+
     
     var Image = UIImage()
     var Name = ""
@@ -50,17 +50,25 @@ class DetailViewController: UIViewController {
     var Img2 = UIImage()
     var Img3 = UIImage()
     
-    
     var callback : ((Int)->())?
     var counter1 = 0 {
         didSet {
             cartCount.text = "\(counter1)"
         }
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let value = UserDefaults.standard.string(forKey: "CountAddedProducts")
+        
+        if value != nil {
+            cartCount.text = value
+        }
+        else {
+            cartCount.text = "0"
+        }
+
         probImage.layer.cornerRadius = 15
         probImage.clipsToBounds = true
         
@@ -93,9 +101,10 @@ class DetailViewController: UIViewController {
         cart4View.layer.cornerRadius = cart4View.frame.width / 2
         cart4View.layer.cornerRadius = cart4View.frame.height / 2
         cart4View.layer.masksToBounds = true
+        
         self.updateUI()
     }
-    
+
     func updateUI(){
         if let detailInfo = detailInfo {
             if let urlString = detailInfo.images.first?.src {
@@ -109,8 +118,7 @@ class DetailViewController: UIViewController {
             prodPrice.text = detailInfo.price
             
             let imagesArray = detailInfo.images
-            
-            
+                        
             if imagesArray.count > 0{
                 self.probImage.downloadImage(from: detailInfo.images[0].src)
                 self.imgone.downloadImage(from: detailInfo.images[0].src)
@@ -129,27 +137,60 @@ class DetailViewController: UIViewController {
     @IBAction func firstImgBtnTapped(_ sender: Any) {
         if let imageURL = detailInfo?.images[0].src {
             probImage.downloadImage(from: imageURL)
+            
+            one.layer.borderWidth = 1
+            one.layer.borderColor = UIColor.orange.cgColor
+            one.backgroundColor = .systemGray5
+            
+            two.layer.borderWidth = 1
+            two.layer.borderColor = UIColor.lightGray.cgColor
+            two.backgroundColor = .clear
+            
+            three.layer.borderWidth = 1
+            three.layer.borderColor = UIColor.lightGray.cgColor
+            three.backgroundColor = .clear
         }
     }
     
     @IBAction func secondImgBtnTapped(_ sender: Any) {
         if let imageURL = detailInfo?.images[1].src {
             probImage.downloadImage(from: imageURL)
+            
+            one.layer.borderWidth = 1
+            one.layer.borderColor = UIColor.lightGray.cgColor
+            one.backgroundColor = .clear
+            
+            two.layer.borderWidth = 1
+            two.layer.borderColor = UIColor.orange.cgColor
+            two.backgroundColor = .systemGray5
+            
+            three.layer.borderWidth = 1
+            three.layer.borderColor = UIColor.lightGray.cgColor
+            three.backgroundColor = .clear
         }
     }
     
     @IBAction func thirdImgBtnTapped(_ sender: Any) {
         if let imageURL = detailInfo?.images[2].src {
             probImage.downloadImage(from: imageURL)
+            
+            one.layer.borderWidth = 1
+            one.layer.borderColor = UIColor.lightGray.cgColor
+            one.backgroundColor = .clear
+            
+            two.layer.borderWidth = 1
+            two.layer.borderColor = UIColor.lightGray.cgColor
+            two.backgroundColor = .clear
+            
+            three.layer.borderWidth = 1
+            three.layer.borderColor = UIColor.orange.cgColor
+            three.backgroundColor = .systemGray5
         }
     }
     
     @IBAction func cartTappedToNavigate(_ sender: Any) {
         let cart = self.storyboard?.instantiateViewController(withIdentifier: "CartViewController") as? CartViewController
-        
-        //detail?.Name = arrdata[indexPath.row].name
         cart?.cartArray = cartArray
-        
         self.navigationController?.pushViewController(cart!, animated: true)
     }
     
@@ -157,20 +198,22 @@ class DetailViewController: UIViewController {
         if let info = detailInfo {
             cartArray.append(CartStruct(cartItems: info, cartQuantity: 1))
             cartCount.text = "\(cartArray.count)"
+            self.saveCart(data: cartArray)
             showAlert()
             (sender as AnyObject).setTitle("Go to Cart", for: .normal)
             addToCartbtn.isUserInteractionEnabled = false
+            
+            cartCount.text = cartCount.text
+            UserDefaults.standard.set(cartCount.text, forKey: "CountAddedProducts")
         }
-        /*showAlert()
-         counter1 += 1
-         callback?(counter1)
-         (sender as AnyObject).setTitle("Go to Cart", for: .normal)
-         addToCartbtn.isUserInteractionEnabled = false*/
-        //let cart = self.storyboard?.instantiateViewController(withIdentifier: "CartViewController") as? CartViewController
-        //self.navigationController?.pushViewController(cart!, animated: true)
-        
     }
     
+    func saveCart(data: [CartStruct]) {
+            if let data = try? PropertyListEncoder().encode(data) {
+                UserDefaults.standard.set(data, forKey: "cartt")
+            }
+        }
+
     func showAlert() {
         let alert = UIAlertController(title: "Item Added to Cart", message: nil, preferredStyle: .alert)
         

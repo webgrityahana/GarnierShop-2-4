@@ -18,40 +18,27 @@ class CartViewController: UIViewController, UITableViewDataSource, UITableViewDe
     @IBOutlet var cartTableView: UITableView!
     
     @IBOutlet var totalCount: UILabel!
-    
-    @IBOutlet var proceedBtn: UIButton!
-    
     @IBOutlet var subtotalPrice: UILabel!
     @IBOutlet var shippingPrice: UILabel!
     @IBOutlet var totalPrice: UILabel!
-    
-    /*var callback : ((Int)->())?
-    var counter1 = 0 {
-          didSet {
-            prod1Count.text = "\(counter1)"
-          }
-    }*/
-    
+    @IBOutlet var proceedBtn: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.getCartData()
 
-        /*sh1view.layer.cornerRadius = 15
-        sh1view.clipsToBounds = true
-        
-        sub1btn.layer.cornerRadius = sub1btn.frame.width / 2
-        sub1btn.layer.cornerRadius = sub1btn.frame.height / 2
-        sub1btn.layer.masksToBounds = true
-        sub1btn.layer.borderWidth = 1
-        sub1btn.layer.borderColor = UIColor.black.cgColor
-        
-        add1btn.layer.cornerRadius = add1btn.frame.width / 2
-        add1btn.layer.cornerRadius = add1btn.frame.height / 2
-        add1btn.layer.masksToBounds = true*/
-        
         proceedBtn.layer.cornerRadius = 30
         proceedBtn.clipsToBounds = true
     }
+    
+    func getCartData() {
+           let defaults = UserDefaults.standard
+           if let data = defaults.data(forKey: "cartt") {
+               cartArray = try! PropertyListDecoder().decode([CartStruct].self, from: data)
+               cartTableView.reloadData()
+           }
+       }
     
     @IBAction func proceedBtnTapped(_ sender: Any) {
         showActionsheet()
@@ -78,15 +65,13 @@ class CartViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         let action1 = UIAlertAction(title: "Paypal", style: .default, handler: { action1 in print("tapped Dismiss")
         })
-        
         let image1 = UIImage(named: "Image 18.png")
         action1.setValue(image1?.withRenderingMode(.alwaysOriginal), forKey: "image")
         actionsheet.addAction(action1)
         
         let action2 = UIAlertAction(title: "Credit or Debit Card", style: .default, handler: { action2 in //print("tapped Dismiss")
-            let storyboard      =   UIStoryboard(name: "Main", bundle: nil)
-            let paymentVC   =   storyboard.instantiateViewController(withIdentifier: "PaymentViewController") as! PaymentViewController
-            //paymentVC.orderId     =   self.myDraftOrders[indexPath.row]["id"].intValue
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let paymentVC = storyboard.instantiateViewController(withIdentifier: "PaymentViewController") as! PaymentViewController
             self.navigationController?.pushViewController(paymentVC, animated: true)
         })
         let image2 = UIImage(named: "Image 20.png")
@@ -116,60 +101,52 @@ class CartViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //let cell = tableView.dequeueReusableCell(withIdentifier: "CartCellTableViewCell", for: indexPath) as? CartCellTableViewCell
-        
-        //cell?.productNameCart.text = arrdata[indexPath.row].name
-        
+
         let cell = tableView.dequeueReusableCell(withIdentifier: "CartCellTableViewCell", for: indexPath) as! CartCellTableViewCell
-        let cartData = cartArray[indexPath.row].cartItems
-        
+ 
         cell.cartImageView.downloadImage(from: cartArray[indexPath.row].cartItems.images.first?.src ?? "place_holder_image")
-        
-        //cell.cartImageView.downloadImage(from: cartArray[indexPath.row].cartItems.images.first?.src ?? "place_holder_image")
-        //cell.productNameCart.text = arrdata[indexPath.row].name
+
         cell.productNameCart.text = cartArray[indexPath.row].cartItems.name
-        //cell.prodductDescCart.text = cartArray[indexPath.row].cartItems.first?.shortDescription
-        //cell.productPriceCart.text = cartArray[indexPath.row].cartItems.price
+        cell.prodductDescCart.text = cartArray[indexPath.row].cartItems.categories.first?.type
+        cell.productPriceCart.text = cartArray[indexPath.row].cartItems.price
         
         cell.addBtn.addTarget(self, action: #selector(add(sender:)), for: .touchUpInside)
         cell.addBtn.tag = indexPath.row
-        //let cartQuantity = cartArray[indexPath.row].cartQuantity
-        //cell.prodCount.text = "\(cartQuantity)"
-        //if cartQuantity > 1 {
-           // cell.subBtn.isUserInteractionEnabled = true;
-            //cell.subBtn.addTarget(self, action: #selector(sub(sender:)), for: .touchUpInside)
-           // cell.subBtn.tag = indexPath.row
-        //} else {
-            //cell.subBtn.isUserInteractionEnabled = false;
-        //}
         
         let cartQuantity = cartArray[indexPath.row].cartQuantity
         cell.prodCount.text = "\(cartQuantity)"
-        if cartQuantity > 0 {
+        
+        if cartQuantity >= 0 {
             cell.subBtn.isUserInteractionEnabled = true;
             cell.subBtn.addTarget(self, action: #selector(sub(sender:)), for: .touchUpInside)
             cell.subBtn.tag = indexPath.row
         } else {
             cell.subBtn.isUserInteractionEnabled = false;
         }
-        
         return cell
     }
     
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            cartArray.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            tableView.reloadData()
+        }
+    }
+    
     @objc func add(sender: UIButton){
-        if cartArray[sender.tag].cartQuantity > 0 {
+        if cartArray[sender.tag].cartQuantity >= 0 {
             cartArray[sender.tag].cartQuantity += 1
             cartTableView.reloadData()
         }
     }
     
     @objc func sub(sender: UIButton){
-        if cartArray[sender.tag].cartQuantity > 1 {
+        if cartArray[sender.tag].cartQuantity > 0 {
             cartArray[sender.tag].cartQuantity -= 1
             cartTableView.reloadData()
         }
     }
-    
 }
 
 

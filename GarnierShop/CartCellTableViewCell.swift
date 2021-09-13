@@ -16,16 +16,20 @@ class CartCellTableViewCell: UITableViewCell {
     @IBOutlet var subBtn: UIButton!
     @IBOutlet var prodCount: UILabel!
     @IBOutlet var addBtn: UIButton!
+    @IBOutlet var imageFrame: UIView!
     
-    var callback : ((Int)->())?
+    /*var callback : ((Int)->())?
     var counter1 = 0 {
           didSet {
             prodCount.text = "\(counter1)"
           }
-    }
+    }*/
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        imageFrame.layer.cornerRadius = 15
+        imageFrame.clipsToBounds = true
         
         subBtn.layer.cornerRadius = subBtn.frame.width / 2
         subBtn.layer.cornerRadius = subBtn.frame.height / 2
@@ -38,20 +42,17 @@ class CartCellTableViewCell: UITableViewCell {
         addBtn.layer.masksToBounds = true
     }
     
-//    @IBAction func subBtnTapped(_ sender: Any) {
-//        if counter1 > 0 { counter1 -= 1 }
-//        callback?(counter1)
-//    }
-//    
-//    @IBAction func addBtnTapped(_ sender: Any) {
-//        counter1 += 1
-//        callback?(counter1)
-//    }
+    /*@IBAction func subBtnTapped(_ sender: Any) {
+        if counter1 > 0 { counter1 -= 1 }
+        callback?(counter1)
+    }
+    
+    @IBAction func addBtnTapped(_ sender: Any) {
+        counter1 += 1
+        callback?(counter1)
+    }*/
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
-
 }
